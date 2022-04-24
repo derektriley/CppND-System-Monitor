@@ -115,17 +115,19 @@ float LinuxParser::CpuUtilization(int pid) {
     for (int i = 0; i < 22; i++) {
       value.clear();
       linestream >> value;
-      if (i == 13) { // utime
-        utime = std::stol(value);
-      } else if (i == 14) { //stime
-        stime = std::stol(value);
-      } else if (i == 15) { //cutime
-        cutime = std::stol(value);
-      } else if (i == 16) { //cstime
-        cstime = std::stol(value);
-      } else if (i == 21) { //starttime
-        starttime = std::stol(value);
-      }
+      try {
+        if (i == 13) { // utime
+          utime = std::stol(value);
+        } else if (i == 14) { //stime
+          stime = std::stol(value);
+        } else if (i == 15) { //cutime
+          cutime = std::stol(value);
+        } else if (i == 16) { //cstime
+          cstime = std::stol(value);
+        } else if (i == 21) { //starttime
+          starttime = std::stol(value);
+        }
+      } catch (std::invalid_argument& e) {}
     }
   }
   
@@ -273,5 +275,9 @@ long LinuxParser::UpTime(int pid) {
       linestream >> value;
     }
   }
-  return std::stol(value) / sysconf(_SC_CLK_TCK);
+  long uptime = 0.0;
+  try {
+    uptime = std::stol(value) / sysconf(_SC_CLK_TCK);
+  } catch (std::invalid_argument& e) {}
+  return uptime;
 }
