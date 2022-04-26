@@ -18,20 +18,20 @@ using std::vector;
 
 Processor& System::Cpu() { return cpu_; }
 
-vector<Process>& System::Processes() { 
-    processes_.clear();
-    vector<int> pids = LinuxParser::Pids();
-    for (int pid : pids) {
-        std::string user(LinuxParser::User(pid));
-        std::string command(LinuxParser::Command(pid));
-        long int upTime(LinuxParser::UpTime(pid));
-        std::string ram(LinuxParser::Ram(pid));
-        float cpuUtilization(LinuxParser::CpuUtilization(pid));
-        Process p(pid, user, command, upTime, ram, cpuUtilization);
-        processes_.emplace_back(p);
-    }
-    std::sort(processes_.begin(), processes_.end(), std::greater<>());
-    return processes_;
+vector<Process>& System::Processes() {
+  processes_.clear();
+  vector<int> pids = LinuxParser::Pids();
+  for (int pid : pids) {
+    std::string user(LinuxParser::User(pid));
+    std::string command(LinuxParser::Command(pid));
+    long int upTime(LinuxParser::UpTime(pid));
+    std::string ram(LinuxParser::Ram(pid));
+    float cpuUtilization(LinuxParser::CpuUtilization(pid));
+    Process p(pid, user, command, upTime, ram, cpuUtilization);
+    processes_.emplace_back(p);
+  }
+  std::sort(processes_.begin(), processes_.end(), std::greater<>());
+  return processes_;
 }
 
 std::string System::Kernel() { return this->kernel; }

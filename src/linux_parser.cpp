@@ -68,8 +68,9 @@ vector<int> LinuxParser::Pids() {
   return pids;
 }
 
-float LinuxParser::MemoryUtilization() { 
-  std::filesystem::path path(LinuxParser::kProcDirectory + LinuxParser::kMeminfoFilename);
+float LinuxParser::MemoryUtilization() {
+  std::filesystem::path path(LinuxParser::kProcDirectory +
+                             LinuxParser::kMeminfoFilename);
   std::ifstream stream(path);
   std::string memTotalLine, memFreeLine, key, value;
   int memTotal, memFree;
@@ -86,8 +87,9 @@ float LinuxParser::MemoryUtilization() {
   return ((memTotal - memFree) / (float)memTotal);
 }
 
-long int LinuxParser::UpTime() { 
-  std::filesystem::path path(LinuxParser::kProcDirectory + LinuxParser::kUptimeFilename);
+long int LinuxParser::UpTime() {
+  std::filesystem::path path(LinuxParser::kProcDirectory +
+                             LinuxParser::kUptimeFilename);
   std::ifstream stream(path);
   std::string line;
   long int uptime;
@@ -116,28 +118,29 @@ float LinuxParser::CpuUtilization(int pid) {
       value.clear();
       linestream >> value;
       try {
-        if (i == 13) { // utime
+        if (i == 13) {  // utime
           utime = std::stol(value);
-        } else if (i == 14) { //stime
+        } else if (i == 14) {  // stime
           stime = std::stol(value);
-        } else if (i == 15) { //cutime
+        } else if (i == 15) {  // cutime
           cutime = std::stol(value);
-        } else if (i == 16) { //cstime
+        } else if (i == 16) {  // cstime
           cstime = std::stol(value);
-        } else if (i == 21) { //starttime
+        } else if (i == 21) {  // starttime
           starttime = std::stol(value);
         }
-      } catch (std::invalid_argument& e) {}
+      } catch (std::invalid_argument& e) {
+      }
     }
   }
-  
+
   long total_time = utime + stime;
   total_time = total_time + cutime + cstime;
-  float seconds = (float) uptime - (starttime / (float)Hertz);
-  return 100.0 * (total_time / Hertz) / (float) seconds;
+  float seconds = (float)uptime - (starttime / (float)Hertz);
+  return 100.0 * (total_time / Hertz) / (float)seconds;
 }
 
-float LinuxParser::CpuUtilization() { 
+float LinuxParser::CpuUtilization() {
   int user, nice, system, idle, iowait, irq, softirq, steal, guest, guest_nice;
   std::filesystem::path path(LinuxParser::kProcDirectory +
                              LinuxParser::kStatFilename);
@@ -146,14 +149,15 @@ float LinuxParser::CpuUtilization() {
   if (stream.is_open()) {
     std::getline(stream, line);
     std::istringstream linestream(line);
-    linestream >> cpu >> user >> nice >> system >> idle >> iowait >> irq >> softirq >> steal >> guest >> guest_nice;
+    linestream >> cpu >> user >> nice >> system >> idle >> iowait >> irq >>
+        softirq >> steal >> guest >> guest_nice;
   }
 
   int idleTime = idle + iowait;
   int nonIdleTime = user + nice + system + irq + softirq + steal;
   int totalTime = idleTime + nonIdleTime;
 
-  return (totalTime - idleTime) / (float) totalTime;
+  return (totalTime - idleTime) / (float)totalTime;
 }
 
 int LinuxParser::TotalProcesses() {
@@ -194,7 +198,7 @@ int LinuxParser::RunningProcesses() {
   return 0;
 }
 
-string LinuxParser::Command(int pid) { 
+string LinuxParser::Command(int pid) {
   std::filesystem::path path(LinuxParser::kProcDirectory + to_string(pid) +
                              LinuxParser::kCmdlineFilename);
   std::ifstream stream(path);
@@ -205,6 +209,10 @@ string LinuxParser::Command(int pid) {
   return line;
 }
 
+// Please note that I have used VmRSS here instead of VmSize as VmSize will give
+// the processes Virtual memory size and it is more useful for this application
+// to display VmRSS which gives the exact physical memory being used as a part
+// of Physical RAM.
 string LinuxParser::Ram(int pid) {
   std::filesystem::path path(LinuxParser::kProcDirectory + to_string(pid) +
                              LinuxParser::kStatusFilename);
@@ -214,7 +222,7 @@ string LinuxParser::Ram(int pid) {
     while (std::getline(stream, line)) {
       std::stringstream linestream(line);
       linestream >> key >> value;
-      if (key == "VmSize:") {
+      if (key == "VmRSS:") {
         int vmSizeMb = std::stoi(value) / 1000;
         return std::to_string(vmSizeMb);
       }
@@ -222,7 +230,6 @@ string LinuxParser::Ram(int pid) {
   }
   return string();
 }
-
 
 string LinuxParser::Uid(int pid) {
   std::filesystem::path path(LinuxParser::kProcDirectory + to_string(pid) +
@@ -241,7 +248,7 @@ string LinuxParser::Uid(int pid) {
   return line;
 }
 
-string LinuxParser::User(int pid) { 
+string LinuxParser::User(int pid) {
   std::filesystem::path path(LinuxParser::kPasswordPath);
   std::ifstream stream(path);
   std::string line;
@@ -255,14 +262,14 @@ string LinuxParser::User(int pid) {
       std::istringstream linestream(line);
       linestream >> user >> passwd >> uid;
       if (uid.compare(uidString) == 0) {
-          return user;
+        return user;
       }
     }
   }
   return user;
 }
 
-long LinuxParser::UpTime(int pid) { 
+long LinuxParser::UpTime(int pid) {
   std::filesystem::path path(LinuxParser::kProcDirectory + to_string(pid) +
                              LinuxParser::kStatFilename);
   std::ifstream stream(path);
@@ -278,6 +285,7 @@ long LinuxParser::UpTime(int pid) {
   long uptime = 0.0;
   try {
     uptime = std::stol(value) / sysconf(_SC_CLK_TCK);
-  } catch (std::invalid_argument& e) {}
+  } catch (std::invalid_argument& e) {
+  }
   return uptime;
 }

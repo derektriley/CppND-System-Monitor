@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+#include "linux_parser.h"
+
 using std::string;
 using std::to_string;
 using std::vector;
@@ -21,18 +23,12 @@ string Process::Ram() { return ram; }
 
 string Process::User() { return user; }
 
-long int Process::UpTime() { return upTime; }
+long int Process::UpTime() { return LinuxParser::UpTime() - upTime; }
 
-bool Process::operator<(Process const& a [[maybe_unused]]) const {
-  if (cpuUtilization < a.cpuUtilization) {
-    return true;
-  }
-  return false;
+bool Process::operator<(Process const& a) const {
+  return cpuUtilization < a.cpuUtilization;
 }
 
-bool Process::operator>(Process const& a [[maybe_unused]]) const {
-  if (cpuUtilization > a.cpuUtilization) {
-    return true;
-  }
-  return false;
+bool Process::operator>(Process const& a) const {
+  return cpuUtilization > a.cpuUtilization;
 }

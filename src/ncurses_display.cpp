@@ -36,15 +36,19 @@ void NCursesDisplay::DisplaySystem(System& system, WINDOW* window) {
   mvwprintw(window, ++row, 2, "Kernel: %s", system.Kernel().c_str());
   mvwprintw(window, ++row, 2, "CPU: ");
   wattron(window, COLOR_PAIR(1));
-  mvwprintw(window, row, 10, "%s", ProgressBar(system.Cpu().Utilization()).c_str());
+  mvwprintw(window, row, 10, "%s",
+            ProgressBar(system.Cpu().Utilization()).c_str());
   wattroff(window, COLOR_PAIR(1));
   mvwprintw(window, ++row, 2, "Memory: ");
   wattron(window, COLOR_PAIR(1));
-  mvwprintw(window, row, 10, "%s", ProgressBar(system.MemoryUtilization()).c_str());
+  mvwprintw(window, row, 10, "%s",
+            ProgressBar(system.MemoryUtilization()).c_str());
   wattroff(window, COLOR_PAIR(1));
   mvwprintw(window, ++row, 2, "Total Processes: %i", system.TotalProcesses());
-  mvwprintw(window, ++row, 2, "Running Processes: %i", system.RunningProcesses());
-  mvwprintw(window, ++row, 2, "Up Time: %s", Format::ElapsedTime(system.UpTime()).c_str());
+  mvwprintw(window, ++row, 2, "Running Processes: %i",
+            system.RunningProcesses());
+  mvwprintw(window, ++row, 2, "Up Time: %s",
+            Format::ElapsedTime(system.UpTime()).c_str());
   wrefresh(window);
 }
 
@@ -69,11 +73,13 @@ void NCursesDisplay::DisplayProcesses(std::vector<Process>& processes,
     mvwprintw(window, ++row, pid_column,
               (string(window->_maxx - 2, ' ').c_str()));
 
-    mvwprintw(window, row, pid_column, "%s", to_string(processes[i].Pid()).c_str());
-    mvwprintw(window, row, user_column,"%s", processes[i].User().c_str());
-    mvwprintw(window, row, cpu_column, "%s", to_string(processes[i].CpuUtilization()).substr(0, 4).c_str());
+    mvwprintw(window, row, pid_column, "%s",
+              to_string(processes[i].Pid()).c_str());
+    mvwprintw(window, row, user_column, "%s", processes[i].User().c_str());
+    mvwprintw(window, row, cpu_column, "%s",
+              to_string(processes[i].CpuUtilization()).substr(0, 4).c_str());
     mvwprintw(window, row, ram_column, "%s", processes[i].Ram().c_str());
-    mvwprintw(window, row, time_column,"%s",
+    mvwprintw(window, row, time_column, "%s",
               Format::ElapsedTime(processes[i].UpTime()).c_str());
     mvwprintw(window, row, command_column, "%s",
               processes[i].Command().substr(0, window->_maxx - 46).c_str());
