@@ -206,6 +206,9 @@ string LinuxParser::Command(int pid) {
   if (stream.is_open()) {
     std::getline(stream, line);
   }
+  if (line.length() > LinuxParser::kMaxCommandLength) {
+    return line.substr(0, 39) + LinuxParser::kEllipsis;
+  }
   return line;
 }
 
